@@ -56,6 +56,27 @@ function createTask(taskId, title, description) {
   backlogTasks.append(taskCard);
 }
 
+function addColor(column) {
+  let color;
+  switch (column) {
+    case "backlog":
+      color = "rgb(96,96,192)";
+      break;
+    case "doing":
+      color = "rgb(83, 156, 192)";
+      break;
+    case "done":
+      color = "rgb(224,165,116)";
+      break;
+    case "discard":
+      color = "rgb(222,208,130)";
+      break;
+    default:
+      color = "rgb(232,232,232)";
+  }
+  return color;
+}
+
 function addTasks() {
   //Advanced: You can pass through the whole task object
   tasks.forEach((task) => createTask(task.id, task.title, task.description));
@@ -66,7 +87,6 @@ addTasks();
 let elementBeingDragged;
 
 function dragStart() {
-  console.log(this);
   elementBeingDragged = this;
 }
 
@@ -75,6 +95,7 @@ function dragOver(e) {
 }
 
 function dragDrop() {
-  console.log(this);
+  const columnId = this.parentNode.id;
+  elementBeingDragged.firstChild.style.backgroundColor = addColor(columnId);
   this.append(elementBeingDragged);
 }
