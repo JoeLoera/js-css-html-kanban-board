@@ -24,20 +24,31 @@ let tasks = [
   },
 ];
 
-function createTask() {
+taskLists.forEach((taskList) => {
+  taskList.addEventListener("dragover", dragOver);
+  taskList.addEventListener("drop", dragDrop);
+});
+
+function createTask(taskId, title, description) {
   const taskCard = document.createElement("div");
   const taskHeader = document.createElement("div");
   const taskTitle = document.createElement("p");
   const taskDescriptionContainer = document.createElement("div");
   const taskDescription = document.createElement("p");
+  const deleteIcon = document.createElement("p");
 
   taskCard.classList.add("task-container");
   taskHeader.classList.add("task-header");
   taskDescriptionContainer.classList.add("task-description-container");
 
-  taskTitle.textContent = "hi";
-  taskDescription.textContent = "description";
+  taskTitle.textContent = title;
+  taskDescription.textContent = description;
   deleteIcon.textContent = "☒";
+
+  taskCard.setAttribute("draggable", true);
+  taskCard.setAttribute("task-id", taskId);
+
+  taskCard.addEventListener("dragstart", dragStart);
 
   taskHeader.append(taskTitle, deleteIcon);
   taskDescriptionContainer.append(taskDescription);
@@ -45,4 +56,25 @@ function createTask() {
   backlogTasks.append(taskCard);
 }
 
-createTask();
+function addTasks() {
+  //Advanced: You can pass through the whole task object
+  tasks.forEach((task) => createTask(task.id, task.title, task.description));
+}
+
+addTasks();
+
+let elementBeingDragged;
+
+function dragStart() {
+  console.log(this);
+  elementBeingDragged = this;
+}
+
+function dragOver(e) {
+  e.preventDefault();
+}
+
+function dragDrop() {
+  console.log(this);
+  this.append(elementBeingDragged);
+}
