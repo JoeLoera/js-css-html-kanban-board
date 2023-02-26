@@ -1,7 +1,9 @@
 const taskLists = document.querySelectorAll(".task-list");
 const backlogTasks = document.querySelector("#backlog .task-list");
-
-console.log(backlogTasks);
+const titleInput = document.querySelector("#title");
+const descriptionInput = document.querySelector("#description");
+const submitButton = document.querySelector("#submit-button");
+const errorContainer = document.querySelector(".error-container");
 
 let tasks = [
   {
@@ -49,6 +51,7 @@ function createTask(taskId, title, description) {
   taskCard.setAttribute("task-id", taskId);
 
   taskCard.addEventListener("dragstart", dragStart);
+  deleteIcon.addEventListener("click", deleteTask);
 
   taskHeader.append(taskTitle, deleteIcon);
   taskDescriptionContainer.append(taskDescription);
@@ -98,4 +101,56 @@ function dragDrop() {
   const columnId = this.parentNode.id;
   elementBeingDragged.firstChild.style.backgroundColor = addColor(columnId);
   this.append(elementBeingDragged);
+}
+
+function showError(message) {
+  const errorMessage = document.createElement("p");
+  errorMessage.textContent = message;
+  errorMessage.classList.add("error-message");
+  errorContainer.append(errorMessage);
+
+  setTimeout(() => {
+    errorContainer.textContent = "";
+  }, 2000);
+}
+
+function addTask(e) {
+  e.preventDefault();
+  const filteredTitles = tasks.filter((task) => {
+    return task.title === titleInput.value;
+  });
+
+  if (!filteredTitles.length) {
+    const newId = tasks.length;
+
+    tasks.push({
+      id: newId,
+      title: titleInput.value,
+      description: descriptionInput.value,
+    });
+    createTask(newId, titleInput.value, descriptionInput.value);
+    titleInput.value = "";
+    descriptionInput.value = "";
+  } else {
+    showError("Title must be unique!");
+  }
+}
+
+submitButton.addEventListener("click", addTask);
+
+function deleteTask() {
+  const headerTitle = this.parentNode.firstChild.textContent;
+
+  const filteredTasks = tasks.filter((task) => {
+    return task.title === headerTitle;
+  });
+  const newTasks = tasks.filter((task) => {
+    return task !== filteredTasks[0];
+  });
+
+  tasks = tasks.filter((task) => {
+    return task !== filteredTasks[0];
+  });
+
+  this.parentNode.parentNode.remove();
 }
